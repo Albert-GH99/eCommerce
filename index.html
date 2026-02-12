@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<title>GoHike Apparel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f3f3f3;
+}
+
+.container{
+  max-width:480px;
+  margin:auto;
+  background:white;
+  padding:16px;
+}
+
+h1{
+  text-align:center;
+  font-size:22px;
+}
+
+/* ===== PRODUCT CARD ===== */
+.product{
+  background:#fff;
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:16px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+.product img{
+  width:100%;
+  border-radius:10px;
+  cursor:pointer;
+  border:3px solid transparent;
+}
+
+.product.active img{
+  border-color:#111;
+}
+
+.product-name{
+  font-weight:bold;
+  margin-top:8px;
+  text-align:center;
+}
+
+.price-label{
+  text-align:center;
+  font-size:14px;
+  color:#666;
+}
+
+/* ===== SIZE BUTTON ===== */
+.size-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+  justify-content:center;
+}
+
+.size-btn{
+  padding:6px 10px;
+  border:1px solid #ccc;
+  border-radius:20px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.size-btn.active{
+  background:#111;
+  color:white;
+  border-color:#111;
+}
+
+/* ===== QTY ===== */
+.qty-box{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  margin-top:10px;
+}
+
+.qty-box button{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:none;
+  background:#eee;
+  font-size:18px;
+  cursor:pointer;
+}
+
+button.main{
+  width:100%;
+  padding:12px;
+  background:#111;
+  color:white;
+  border:none;
+  border-radius:8px;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+.cart-item{
+  font-size:14px;
+  padding:6px 0;
+  border-bottom:1px dashed #ddd;
+}
+
+.price-box{
+  background:#fafafa;
+  padding:10px;
+  border-radius:8px;
+  margin-top:10px;
+  font-size:14px;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+}
+/* ===== SHIPPING STYLE ===== */
+.shipping-options{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:10px;
+}
+
+.ship-card{
+  padding:10px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.ship-card.active{
+  border-color:#111;
+  background:#f5f5f5;
+}
+
+/* ===== PREMIUM TOUCH ===== */
+
+.product{
+  transition:all 0.2s ease;
+}
+
+.product:hover{
+  transform:scale(1.01);
+}
+
+.product-name{
+  font-size:16px;
+}
+
+.price-label{
+  font-size:18px;
+  font-weight:bold;
+  margin-top:4px;
+}
+
+button.main{
+  font-weight:bold;
+  letter-spacing:0.5px;
+}
+
+.ship-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:500;
+}
+
+.ship-card::after{
+  content:"→";
+  font-size:14px;
+  opacity:0.5;
+}
+
+.ship-card.active{
+  background:#111;
+  color:white;
+}
+
+.low-stock{
+  font-size:11px;
+  color:#d00;
+  text-align:center;
+  margin-top:6px;
+}
+
+.badge{
+  text-align:center;
+  font-size:12px;
+  font-weight:bold;
+  margin-top:6px;
+}
+
+.badge.low{
+  color:#d35400;
+}
+
+.badge.sold{
+  color:#c0392b;
+}
+
+.grand-total{
+  margin-top:14px;
+  padding:14px;
+  background:#111;
+  color:white;
+  border-radius:12px;
+  text-align:center;
+}
+
+.grand-total .grand-amount{
+  font-size:26px;
+  font-weight:bold;
+  margin-top:4px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div style="text-align:center; margin-bottom:15px;">
+  <img src="./img/logo.png"
+       alt="Logo"
+       style="
+         max-width:160px;
+         max-height:80px;
+         width:auto;
+         height:auto;
+         object-fit:contain;
+       ">
+</div>
+<h1>GoHike Apparel</h1>
+
+<!-- ===================================================== -->
+<!-- ===================== CONFIG ZONE =================== -->
+<!-- UBAH DI SINI SAHAJA                                   -->
+<!-- ===================================================== -->
+
+<script>
+const CONFIG = {
+  whatsapp: "60123456789",     // Tukar nombor sini
+  basePrice: 45,               // Tukar harga asas sini
+  sizeExtra: {                 // Tukar tambahan saiz sini
+    "3XL":3,
+    "4XL":6,
+    "5XL":9
+  },
+  shipping:{
+    semenanjung:7.90,
+    sabahSarawak:15.00
+  }
+};
+</script>
+
+<!-- ===================================================== -->
+<!-- ================= PRODUCT LIST ZONE ================= -->
+<!-- TAMBAH PRODUK SINI SAHAJA                             -->
+<!-- ===================================================== -->
+
+<script>
+const PRODUCTS = [
+  {
+    id: "A",
+    name: "Design A",
+    img: "img/designA.jpg",
+    mode: "preorder"
+  },
+  {
+    id: "B",
+    name: "Design B",
+    img: "img/designB.jpg",
+    mode: "ready",
+    stock: {
+      "S": 5,
+      "M": 0,
+      "L": 3,
+      "XL": 2,
+      "2XL": 1,
+      "3XL": 0,
+      "4XL": 0,
+      "5XL": 0
+    }
+  }
+];
+
+</script>
+
+<!-- ===================================================== -->
+<!-- ==================== UI SECTION ===================== -->
+<!-- JANGAN UBAH BAWAH INI KECUALI FAHAM                  -->
+<!-- ===================================================== -->
+
+<div id="productList"></div>
+
+<h3>Cart</h3>
+<div id="cartView">Cart kosong</div>
+
+<h3>Penghantaran</h3>
+
+<div class="shipping-options">
+
+  <div class="ship-card active" onclick="selectShipping('pickup', this)">
+    Self Pickup (Percuma)
+  </div>
+
+  <div class="ship-card" onclick="selectShipping('semenanjung', this)">
+    Pos Semenanjung (RM7.90)
+  </div>
+
+  <div class="ship-card" onclick="selectShipping('sabahSarawak', this)">
+    Pos Sabah & Sarawak (RM15.00)
+  </div>
+
+  <div class="grand-total">
+  Jumlah Perlu Dibayar
+  <div class="grand-amount">
+    RM <span id="total">0.00</span>
+  </div>
+</div>
+
+<h3>Maklumat Pembeli</h3>
+<input id="custName" placeholder="Nama penuh">
+<input id="custPhone" placeholder="No telefon">
+<input id="custAddress" placeholder="Alamat penuh (wajib jika pos)" style="display:none;">
+
+<button class="main" onclick="submitOrder()">Hantar Order</button>
+
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+
+<form id="sheetForm"
+action="PASTE_GOOGLE_FORM_URL_DI_SINI"
+method="POST"
+target="hidden_iframe">
+
+<input type="hidden" name="entry.XXXX1" id="f_order">
+<input type="hidden" name="entry.XXXX2" id="f_name">
+<input type="hidden" name="entry.XXXX3" id="f_phone">
+<input type="hidden" name="entry.XXXX4" id="f_address">
+<input type="hidden" name="entry.XXXX5" id="f_items">
+<input type="hidden" name="entry.XXXX6" id="f_total">
+
+</form>
+
+</div>
+
+<!-- ===================================================== -->
+<!-- ==================== ENGINE ZONE ==================== -->
+<!-- ❌ JANGAN SENTUH BAHAGIAN INI                         -->
+<!-- ===================================================== -->
+
+<script>
+let shippingType="pickup";
+let shippingCost=0;
+
+const cart=[];
+const selected={};
+
+function unitPrice(size){
+  let price=CONFIG.basePrice;
+  if(CONFIG.sizeExtra[size]) price+=CONFIG.sizeExtra[size];
+  return price;
+}
+
+function renderProducts(){
+
+  const el=document.getElementById("productList");
+  el.innerHTML="";
+
+  PRODUCTS.forEach(p=>{
+
+    selected[p.id]={size:"M",qty:1};
+
+    const totalStock = p.mode==="ready"
+      ? Object.values(p.stock||{}).reduce((a,b)=>a+b,0)
+      : null;
+
+    const isSoldOut = p.mode==="ready" && totalStock===0;
+    const isLowStock = p.mode==="ready" && totalStock>0 && totalStock<=5;
+
+    el.innerHTML+=`
+      <div class="product" id="product-${p.id}">
+
+        <img src="${p.img}" onclick="selectProduct('${p.id}')">
+
+        <div class="product-name">${p.name}</div>
+        <div class="price-label">Harga bermula RM${CONFIG.basePrice}</div>
+
+        <div class="size-group" id="sizes-${p.id}">
+        ${["S","M","L","XL","2XL","3XL","4XL","5XL"]
+        .map(s=>{
+
+          if(p.mode==="ready"){
+            const stock=p.stock?.[s]||0;
+
+            return `
+            <div class="size-btn ${s==="M"?"active":""}"
+            style="${stock===0?'opacity:0.3;pointer-events:none;':''}"
+            onclick="selectSize('${p.id}','${s}',this)">
+            ${s}
+            </div>`;
+          }
+
+          return `
+          <div class="size-btn ${s==="M"?"active":""}"
+          onclick="selectSize('${p.id}','${s}',this)">
+          ${s}
+          </div>`;
+        }).join("")}
+        </div>
+
+        ${isLowStock?`<div class="badge low">⚠ Limited Stock</div>`:""}
+        ${isSoldOut?`<div class="badge sold">SOLD OUT</div>`:""}
+
+        <div class="qty-box">
+          <button onclick="changeQty('${p.id}',-1)">−</button>
+          <span id="qty-${p.id}">1</span>
+          <button onclick="changeQty('${p.id}',1)">+</button>
+        </div>
+
+        <button class="main"
+        ${isSoldOut?'disabled style="background:#ccc;cursor:not-allowed;"':''}
+        onclick="addToCart('${p.id}')">
+        Tambah ke Cart
+        </button>
+
+      </div>
+    `;
+  });
+}
+
+function selectProduct(id){
+  document.querySelectorAll(".product")
+  .forEach(p=>p.classList.remove("active"));
+  document.getElementById("product-"+id)
+  .classList.add("active");
+}
+
+function selectSize(id,size,el){
+  selected[id].size=size;
+  document.querySelectorAll(`#sizes-${id} .size-btn`)
+  .forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+}
+
+function changeQty(id,diff){
+  selected[id].qty=Math.max(1,selected[id].qty+diff);
+  document.getElementById("qty-"+id).innerText=
+  selected[id].qty;
+}
+
+function addToCart(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  const s=selected[id];
+  const unit=unitPrice(s.size);
+  const sub=unit*s.qty;
+
+if(p.mode==="ready"){
+  const available=p.stock?.[s.size]||0;
+
+  if(s.qty>available){
+    alert("Stock tidak mencukupi");
+    return;
+  }
+
+  p.stock[s.size]-=s.qty;
+}
+
+
+  cart.push({
+    name:p.name,
+    size:s.size,
+    qty:s.qty,
+    subtotal:sub
+  });
+
+  renderCart();
+  renderProducts();
+}
+
+function renderCart(){
+
+  let html = "";
+  let subtotal = 0;
+
+  cart.forEach((i,index)=>{
+    subtotal += i.subtotal;
+
+    html += `
+    <div class="cart-item">
+      ${i.name} (${i.size}) x${i.qty}
+      = RM${i.subtotal.toFixed(2)}
+      <button onclick="removeItem(${index})"
+      style="float:right;background:none;border:none;color:red;font-weight:bold;cursor:pointer;">
+      ✕
+      </button>
+    </div>`;
+  });
+
+  document.getElementById("cartView").innerHTML =
+  html || "Cart kosong";
+
+  const finalTotal = subtotal + shippingCost;
+
+  document.getElementById("total").innerText =
+  finalTotal.toFixed(2);
+}
+
+function removeItem(index){
+
+  const item=cart[index];
+  const product=PRODUCTS.find(p=>p.name===item.name);
+
+  if(product.mode==="ready"){
+    product.stock[item.size]+=item.qty;
+  }
+
+  cart.splice(index,1);
+  renderCart();
+  renderProducts();
+}
+
+function selectShipping(type, el){
+
+  shippingType = type;
+
+  document.querySelectorAll(".ship-card")
+  .forEach(c => c.classList.remove("active"));
+
+  el.classList.add("active");
+
+  if(type === "pickup"){
+    shippingCost = 0;
+    custAddress.style.display = "none";
+  }
+
+  if(type === "semenanjung"){
+    shippingCost = CONFIG.shipping.semenanjung;
+    custAddress.style.display = "block";
+  }
+
+  if(type === "sabahSarawak"){
+    shippingCost = CONFIG.shipping.sabahSarawak;
+    custAddress.style.display = "block";
+  }
+
+  console.log("Shipping cost sekarang:", shippingCost);
+
+  renderCart();
+}
+
+function submitOrder(){
+  if(cart.length===0){
+    alert("Cart kosong");
+    return;
+  }
+
+  const name=custName.value;
+  const phone=custPhone.value;
+  const address=custAddress.value;
+
+  if(!name||!phone){
+    alert("Sila isi nama & telefon");
+    return;
+  }
+  
+  if(shippingType!=="pickup" && !address){
+     alert("Alamat wajib diisi untuk penghantaran");
+     return;
+     }
+
+  let list=cart.map(i=>
+  `- ${i.name} (${i.size}) x${i.qty} = RM${i.subtotal}`
+  ).join("\n");
+
+  const subtotal=cart.reduce((s,i)=>s+i.subtotal,0);
+  const total=subtotal+shippingCost;
+
+
+document.getElementById("f_order").value="ORD"+Date.now();
+document.getElementById("f_name").value=name;
+document.getElementById("f_phone").value=phone;
+document.getElementById("f_address").value=address;
+document.getElementById("f_items").value=list;
+document.getElementById("f_total").value=total;
+const finalTotal = total + shippingCost;
+
+document.getElementById("total").innerText =
+finalTotal.toFixed(2);
+
+document.getElementById("sheetForm").submit();
+
+  const msg=
+"TEMPAHAN BAJU\n\n"+
+list+"\n\n"+
+"Shipping: "+
+(shippingType==="pickup"?"Self Pickup":
+shippingType==="semenanjung"?"Semenanjung RM7.90":
+"Sabah/Sarawak RM15.00")+"\n"+
+"Jumlah Perlu Dibayar: RM"+total+"\n\n"+
+"Nama: "+name+"\n"+
+"Telefon: "+phone+"\n"+
+(shippingType!=="pickup"?"Alamat: "+address:"");
+
+const orderId="ORD"+Date.now();
+
+fetch("https://script.google.com/macros/s/AKfycbyb4YAsoq5V1XUfgLKeX3xYFdU4r_7O5iSiSq_4Aa00t9wsxO88DdJ52lpm_G7oiySW/exec",{
+  method:"POST",
+  headers:{
+    "Content-Type":"application/json"
+  },
+  body:JSON.stringify({
+    order_id:orderId,
+    product_list:list,
+    subtotal:subtotal,
+    shipping:shippingCost,
+    total:total,
+    customer_name:name,
+    customer_phone:phone,
+    customer_address:address
+  })
+})
+.then(res=>res.json())
+.then(data=>{
+  console.log("Order saved",data);
+
+  window.location.href=
+  "https://wa.me/"+CONFIG.whatsapp+
+  "?text="+encodeURIComponent(msg);
+})
+.catch(err=>{
+  alert("Error simpan order. Sila cuba lagi.");
+});
+
+  window.location.href=
+  "https://wa.me/"+CONFIG.whatsapp+
+  "?text="+encodeURIComponent(msg);
+}
+
+renderProducts();
+</script>
+
+<p style="
+  text-align:center;
+  font-size:12px;
+  color:#777;
+  line-height:1.5;
+">
+Hak Milik: GoHike Crew Services<br>
+Hubungi: WhatsApp 01135318911<br><br>
+Maklumat pembeli digunakan untuk tujuan tempahan jersi GoHike sahaja.
+</p>
+
+</body>
+</html>
